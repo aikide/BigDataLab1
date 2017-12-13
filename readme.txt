@@ -46,9 +46,9 @@
  * * bigdatalab1.jar -e "test2.csv" 0.22 0.16
  * * Result file: rules_test2.txt
  *
- * * bigdatalab1.jar "test3.csv" 0.21 0.3 "test3translatedNames.txt"
+ * * bigdatalab1.jar "test3.csv" 0.21 0.3
  * * Result file: rules_test3.txt
  *
- * * bigdatalab1.jar -e -c "test4.csv" 0.47 0.05 "test4translatedNames.txt" -s
+ * * bigdatalab1.jar -e -s -c "test4.csv" 0.47 0.05
  * * Result file: <console>
  * */
