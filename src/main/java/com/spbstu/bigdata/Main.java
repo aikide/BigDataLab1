@@ -123,6 +123,7 @@ public class Main {
         } catch (Exception ex) {
             System.out.println("Error: exception caught during loading.");
             ex.printStackTrace();
+            return;
         }
 
         Apriori apriori = new Apriori(minSupp, minConf, data.getDatabase());

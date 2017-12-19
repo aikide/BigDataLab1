@@ -10,6 +10,7 @@ $RECYCLE.BIN/
 
 #Idea files
 .idea/
+target/
 
 # Windows Installer files
 *.cab
