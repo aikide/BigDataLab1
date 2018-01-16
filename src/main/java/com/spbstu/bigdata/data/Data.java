@@ -1,7 +1,6 @@
 package com.spbstu.bigdata.data;
 
 import com.spbstu.bigdata.apriori.ItemSet;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -58,7 +57,22 @@ public class Data {
         this.isTransactionType = isTransactionType;
     }
 
-    // Load transaction's file
+    // Copy-ed from Apache Commons StringUtils
+    private static int countMatches(String str, String sub) {
+        if(!str.isEmpty() && !sub.isEmpty()) {
+            int count = 0;
+
+            for(int idx = 0; (idx = str.indexOf(sub, idx)) != -1; idx += sub.length()) {
+                ++count;
+            }
+
+            return count;
+        } else {
+            return 0;
+        }
+    }
+
+    // Load file
     public void loadData(boolean excludeFirst) throws IOException {
         if (this.isTransactionType) {
             loadDataTransactional(excludeFirst);
@@ -111,7 +125,7 @@ public class Data {
             throw new IOException("Error: First line in file is empty, but it shouldn't be.");
         }
 
-        transactionStock = new int[StringUtils.countMatches(line, ",") + 1 - firstItem];
+        transactionStock = new int[countMatches(line, ",") + 1 - firstItem];
 
         do {
             if (line.isEmpty()) {
