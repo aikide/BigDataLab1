@@ -12,10 +12,10 @@ Application information.
  *              Example: java -jar bigdatalab1-1.0-SNAPSHOT.jar -e "../1000.csv" 0.05 0.05
  *              After program is finished it's work, results could be found, depending of flags, in command prompt or
  *              files "rulesApriori_*.txt" and "rulesFPGrowth_*.txt".
- * Reminder: Some files contain transaction number as first element of line. To get accurate data exclude such elements with '-e' flag.
+ * Reminder: Some files contain transaction number as first element of line. To get accurate data, exclude such elements with '-e' flag.
  * ****
  * Info about types files app uses as input data.
- *  Generally, input file should be presented like example below:
+ *  Generally, input file should be presented like example below (unless it's transaction type of file, which is parsed via '-t' flag):
     "1, 3, 5, 6
      3, 4, 5
      1, 3, 4, 7
@@ -23,11 +23,11 @@ Application information.
      2"
     Here, every transaction consists of numbers of objects (numbers could be started from 0), separated with 'separator'.
     Every transaction starts from new line.
-    List of possible separators is: ", " (comma and space after it), " " (space only).
+    List of possible separators is: "," (comma), " " (space only).
     Type of file isn't relevant.
  * ****
  * Info about input arguments.
- * bigdatalab1.jar [<excludeFirstColumnFlag>] [<delimiterFlag>] [<returnedAnswerIndicator>] <inputFileName> <minSupp> <minConf>
+ * bigdatalab1.jar [<excludeFirstColumnFlag>] [<delimiterFlag>] [<transactionTypeOfFileFlag>] [<returnedAnswerIndicator>] <inputFileName> <minSupp> <minConf>
  * Descriptions:
  *  <excludeFirstColumnFlag>:
  *  *  Necessary: No
@@ -41,8 +41,15 @@ Application information.
  *  *  Necessary: No
  *  *  Values: '-s', ''
  *  *  Default value: ''.
- *  *  Details: If file has delimiter, different from usual comma & space (', '), it could be set to:
+ *  *  Details: If file has delimiter, different from usual comma (','), it could be set to:
  *  *           -s - space symbol (' ')
+ *  <transactionTypeOfFileFlag>:
+ *  *  Necessary: No
+ *  *  Values: '-t', ''
+ *  *  Default value: ''.
+ *  *  Details: If file is consists of lines of 0 and 1, which is representation of transactions occurred, this flag
+ *  *           could be set to -t. If representation consists of rows of numbers of elements in transaction, no value
+ *  *           no value needed (default representation).
  *  <returnedAnswerIndicator>:
  *  *  Necessary: No
  *  *  Values: '-c', '-f'
@@ -74,9 +81,9 @@ Application information.
  * * bigdatalab1.jar -e "test2.csv" 0.22 0.16
  * * Result file: rules_test2.txt
  *
- * * bigdatalab1.jar "test3.csv" 0.21 0.3
+ * * bigdatalab1.jar -s -t "test3.csv" 0.21 0.3
  * * Result file: rules_test3.txt
  *
- * * bigdatalab1.jar -e -s -c "test4.csv" 0.47 0.05
+ * * bigdatalab1.jar -e -c "test4.csv" 0.47 0.05
  * * Result file: <console>
  * */

@@ -9,7 +9,7 @@ import com.spbstu.bigdata.fpgrowth.FPGrowth;
 import java.util.Map;
 
 /* Info about input arguments.
- * bigdatalab1.jar [<excludeFirstColumnFlag>] [<delimiterFlag>] [<returnedAnswerIndicator>] <inputFileName> <minSupp> <minConf>
+ * bigdatalab1.jar [<excludeFirstColumnFlag>] [<delimiterFlag>] [<transactionTypeOfFileFlag>] [<returnedAnswerIndicator>] <inputFileName> <minSupp> <minConf>
  * Descriptions:
  *  <excludeFirstColumnFlag>:
  *  *  Necessary: No
@@ -23,8 +23,15 @@ import java.util.Map;
  *  *  Necessary: No
  *  *  Values: '-s', ''
  *  *  Default value: ''.
- *  *  Details: If file has delimiter, different from usual comma & space (', '), it could be set to:
+ *  *  Details: If file has delimiter, different from usual comma (','), it could be set to:
  *  *           -s - space symbol (' ')
+ *  <transactionTypeOfFileFlag>:
+ *  *  Necessary: No
+ *  *  Values: '-t', ''
+ *  *  Default value: ''.
+ *  *  Details: If file is consists of lines of 0 and 1, which is representation of transactions occurred, this flag
+ *  *           could be set to -t. If representation consists of rows of numbers of elements in transaction, no value
+ *  *           no value needed (default representation).
  *  <returnedAnswerIndicator>:
  *  *  Necessary: No
  *  *  Values: '-c', '-f'
@@ -56,20 +63,21 @@ import java.util.Map;
  * * bigdatalab1.jar -e "test2.csv" 0.22 0.16
  * * Result file: rules_test2.txt
  *
- * * bigdatalab1.jar "test3.csv" 0.21 0.3 "test3translatedNames.txt"
+ * * bigdatalab1.jar -s -t "test3.csv" 0.21 0.3
  * * Result file: rules_test3.txt
  *
- * * bigdatalab1.jar -e -c "test4.csv" 0.47 0.05 "test4translatedNames.txt" -s
+ * * bigdatalab1.jar -e -c "test4.csv" 0.47 0.05
  * * Result file: <console>
  * */
 
 public class Main {
     public static void main(String[] argv) {
-        String inputFileName, delim = ", ";
+        String inputFileName, delim = ",";
         int argShift = 0;
         double minSupp = 0, minConf = 0;
         boolean excludeFirstColumn = false,
-                saveDataToFile = true;
+                saveDataToFile = true,
+                isTransactionType = false;
 
         switch (argv.length)
         {
@@ -77,12 +85,17 @@ public class Main {
             case 4:
             case 5:
             case 6:
+            case 7:
                 if (argv[argShift].equals("-e")) {
                     excludeFirstColumn = true;
                     argShift += 1;
                 }
                 if (argv[argShift].equals("-s")) {
                     delim = " ";
+                    argShift += 1;
+                }
+                if (argv[argShift].equals("-t")) {
+                    isTransactionType = true;
                     argShift += 1;
                 }
                 if (argv[argShift].equals("-c")) {
@@ -115,7 +128,7 @@ public class Main {
         }
 
 
-        Data data = new Data(inputFileName, delim);
+        Data data = new Data(inputFileName, delim, isTransactionType);
 
 
         try {

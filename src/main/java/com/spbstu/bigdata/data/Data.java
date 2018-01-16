@@ -1,6 +1,7 @@
 package com.spbstu.bigdata.data;
 
 import com.spbstu.bigdata.apriori.ItemSet;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ public class Data {
     private String itemSeparator;
     private List<int[]> database;
     private int maxNumber;
+    private boolean isTransactionType;
 
     public String getInputData() {
         return inputData;
@@ -43,20 +45,30 @@ public class Data {
     // * " " - .dat
     public Data(String inputData) {
         this.inputData = inputData;
-        this.itemSeparator = ", ";
+        this.itemSeparator = ",";
         this.database = null;
         this.maxNumber = 0;
     }
 
-    public Data(String inputData, String delim) {
+    public Data(String inputData, String delim, boolean isTransactionType) {
         this.inputData = inputData;
         this.itemSeparator = delim;
         this.database = null;
         this.maxNumber = 0;
+        this.isTransactionType = isTransactionType;
     }
 
     // Load transaction's file
     public void loadData(boolean excludeFirst) throws IOException {
+        if (this.isTransactionType) {
+            loadDataTransactional(excludeFirst);
+        } else {
+            loadDataNormal(excludeFirst);
+        }
+    }
+
+
+    private void loadDataNormal(boolean excludeFirst) throws IOException {
         int firstItem = 0;
         database = new ArrayList<>(); // the database in memory
 
@@ -75,12 +87,55 @@ public class Data {
             int transaction[] = new int[lineSep.length - firstItem];
 
             for (int i = firstItem; i < lineSep.length; i++) {
-                Integer item = Integer.parseInt(lineSep[i]);
+                Integer item = Integer.parseInt(lineSep[i].trim());
                 transaction[i - firstItem] = item;
             }
             this.maxNumber = Math.max(this.maxNumber, transaction[transaction.length - 1]);
             database.add(transaction);
         }
+        reader.close();
+    }
+
+
+    private void loadDataTransactional(boolean excludeFirst) throws IOException {
+        int firstItem = 0, transLen = 0, transactionStock[];
+        database = new ArrayList<>(); // the database in memory
+
+        if (excludeFirst)
+            firstItem = 1;
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputData));
+        String line = reader.readLine();
+
+        if (line.isEmpty()) {
+            throw new IOException("Error: First line in file is empty, but it shouldn't be.");
+        }
+
+        transactionStock = new int[StringUtils.countMatches(line, ",") + 1 - firstItem];
+
+        do {
+            if (line.isEmpty()) {
+                continue;
+            }
+
+            String[] lineSep = line.split(itemSeparator);
+
+            for (int i = firstItem; i < lineSep.length; i++) {
+                if (!lineSep[i].equals("0")) {
+                    transactionStock[transLen] = i - firstItem;
+                    transLen += 1;
+                }
+            }
+
+            int transaction[] = new int[transLen];
+
+            System.arraycopy(transactionStock, 0, transaction, 0, transLen);
+            this.maxNumber = Math.max(this.maxNumber, transaction[transLen - 1]);
+            database.add(transaction);
+            // transactionStock may be not 'zero'-ed, because it is updated from the beginning and we know then to stop
+            // getting numbers (transLen helps)
+            transLen = 0;
+        } while (((line = reader.readLine()) != null));
         reader.close();
     }
 
